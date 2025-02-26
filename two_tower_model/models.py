@@ -5,16 +5,7 @@ from transformers import AutoTokenizer, AutoModel
 
 class TwoTowerModel:
     def __init__(self):
-        self.query_model = Encoder()
-        self.doc_model = Encoder()
-        self.similarity = nn.CosineSimilarity(dim=1, eps=1e-08)
-
-    def forward(self, query: str, doc: str):
-        h_query = self.query_model(query)
-        h_doc = self.doc_model(doc)
-        similarity = self.similarity(h_query, h_doc)
-
-        return similarity
+        pass
 
 
 class Encoder(nn.Module):

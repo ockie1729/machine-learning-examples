@@ -4,18 +4,8 @@ import torch
 
 
 class TestTwoTowerModel(unittest.TestCase):
-
-    @unittest.skip("重いので一旦スキップ")
     def test_constructor(self):
         model = TwoTowerModel()
-
-    @unittest.skip("重いので一旦スキップ")
-    def test_forward(self):
-        model = TwoTowerModel()
-
-        similarity = model.forward(query="ラーメン", doc="一風堂 早稲田店")
-
-        print(similarity)
 
 
 class TestEncoder(unittest.TestCase):
