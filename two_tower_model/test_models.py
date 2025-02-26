@@ -27,7 +27,7 @@ class TestContrastiveLoss(unittest.TestCase):
 
         loss = contrastive_loss(y1, y2, t)
 
-        self.assert(loss, 1)
+        self.assertEqual(loss, 1)
 
 if __name__ == "__main__":
     unittest.main()
