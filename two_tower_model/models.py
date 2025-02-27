@@ -3,9 +3,18 @@ from torch import nn
 from transformers import AutoTokenizer, AutoModel
 
 
-class TwoTowerModel:
-    def __init__(self):
-        pass
+class TwoTowerModel(nn.Module):
+    def __init__(self, query_encoder: nn.Module, doc_encoder: nn.Module):
+        super(TwoTowerModel, self).__init__()
+
+        self.query_encoder = query_encoder
+        self.doc_encoder = doc_encoder
+
+    def forward(self, query, doc):
+        h_queries = self.query_encoder(query)
+        h_docs = self.doc_encoder(doc)
+
+        return h_queries, h_docs
 
 
 class Encoder(nn.Module):

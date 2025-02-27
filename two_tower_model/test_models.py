@@ -5,7 +5,18 @@ import torch
 
 class TestTwoTowerModel(unittest.TestCase):
     def test_constructor(self):
-        model = TwoTowerModel()
+        query_encoder = Encoder()
+        doc_encoder = Encoder()
+
+        model = TwoTowerModel(query_encoder=query_encoder, doc_encoder=doc_encoder)
+
+    def test_forward(self):
+        query_encoder = Encoder()
+        doc_encoder = Encoder()
+
+        model = TwoTowerModel(query_encoder=query_encoder, doc_encoder=doc_encoder)
+
+        h_queries, h_docs = model("query", "doc")
 
 
 class TestEncoder(unittest.TestCase):
