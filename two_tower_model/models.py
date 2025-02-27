@@ -19,7 +19,7 @@ class TwoTowerModel(nn.Module):
 
 class Encoder(nn.Module):
     def __init__(self, model_name="line-corporation/line-distilbert-base-japanese"):
-        super().__init__()
+        super(Encoder, self).__init__()
 
         self.tokenizer = AutoTokenizer.from_pretrained(
             model_name, trust_remote_code=True
