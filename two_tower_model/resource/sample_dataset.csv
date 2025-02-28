@@ -1,4 +1,9 @@
 text1,text2,label
 a,aa,1
-aa,b,0
+a,bbb,0
 c,cc,1
+b,bbb,1
+b,cc,0
+e,eee,1
+e,aa,0
+f,fff,1

@@ -20,7 +20,7 @@ class TestTwoTowerModel(unittest.TestCase):
 
 
 class TestEncoder(unittest.TestCase):
-    @unittest.skip("重いので一旦スキップ")
+    @unittest.skip("実行に時間がかかるのでスキップ")
     def test_forward(self):
         query_encoder = Encoder()
         output = query_encoder("input")
