@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # coding: utf-8
+from typing import List
+
 import polars as pl
 from tqdm import tqdm
 
@@ -12,16 +14,20 @@ from models import Encoder, TwoTowerModel, ContrastiveLoss
 from dataset import PairedTextDataset
 
 
-def calc_accuracy(h_queries, h_docs, labels, margin=1.0) -> float:
+def predict(h_queries, h_docs, margin=1.0):
     distances = vector_norm(h_queries - h_docs, dim=1)
     predictions = (distances <= margin).int()
 
-    accuracy = torch.eq(predictions, labels).float().mean().item()
+    return predictions
+
+
+def calc_accuracy(predictions: List[int], labels: List[int]) -> float:
+    accuracy = sum([pred == label for (pred, label) in zip(predictions, labels)])/len(predictions)
 
     return accuracy
 
 
-def train(train_dataset_path: str, valid_dataset_path):
+def train(train_dataset_path: str, valid_dataset_path) -> torch.nn.Module:
 
     # preparing datasets and dataloaders
     df_train = pl.read_csv(train_dataset_path)
@@ -69,20 +75,66 @@ def train(train_dataset_path: str, valid_dataset_path):
 
         # evaluation
         two_tower_model.eval()
+        predictions_list = []
+        labels_list = []
         for queries, docs, labels in tqdm(dataloader_valid,
                                           total=len(dataloader_valid)):
             h_queries, h_docs = two_tower_model(query=queries, doc=docs)
 
             loss_valid = contrastive_loss(y1=h_queries, y2=h_docs, t=labels)
-            acc_valid = calc_accuracy(h_queries=h_queries, h_docs=h_docs, labels=labels)
+            preds = predict(h_queries=h_queries, h_docs=h_docs)
+
+            predictions_list.append(preds.tolist())
+            labels_list.append(labels.tolist())
+
+        predictions_flatten = [pred for sublist in predictions_list for pred in sublist]
+        labels_flatten = [label for sublist in labels_list for label in sublist]
+
+        acc_valid = calc_accuracy(predictions=predictions_flatten, labels=labels_flatten)
 
         print(f'Epoch {epoch+1}/{num_epochs}, Valid Loss: {loss_valid.item()} Valid Acc: {acc_valid}')
         print()
 
-def main():
-    dataset_csv_path = ""  # FIXME
+    return two_tower_model
 
-    train(dataset_csv_path=dataset_csv_path)
+
+def test_evaluation(model: torch.nn.Module, test_dataset_path: str) -> float:
+    df_test = pl.read_csv(test_dataset_path)
+    dataset_test = PairedTextDataset(df=df_test)
+    dataloader_test = DataLoader(dataset=dataset_test,
+                                 batch_size=2,
+                                 shuffle=False,
+                                 num_workers=2,
+                                 drop_last=True)
+
+    predictions_list = []
+    labels_list = []
+    for queries, docs, labels in tqdm(dataloader_test,
+                                      total=len(dataloader_test)):
+        h_queries, h_docs = model(query=queries, doc=docs)
+
+        pred = predict(h_queries=h_queries, h_docs=h_docs)
+        predictions_list.append(pred.tolist())
+        labels_list.append(labels.tolist())
+
+    predictions_flatten = [pred for sublist in predictions_list for pred in sublist]
+    labels_flatten = [label for sublist in labels_list for label in sublist]
+    acc_test = calc_accuracy(predictions=predictions_flatten, labels=labels_flatten)
+
+    return acc_test
+
+
+def main():
+    train_dataset_path = "resource/sample_dataset.csv"
+    valid_dataset_path = "resource/sample_test_dataset.csv"
+    test_dataset_path = "resource/sample_test_dataset.csv"
+
+    two_tower_model = train(train_dataset_path=train_dataset_path,
+                            valid_dataset_path=valid_dataset_path)
+
+    accuracy = test_evaluation(model=two_tower_model,
+                               test_dataset_path=test_dataset_path)
+    print(f"test acc: {accuracy}")
 
 
 if __name__ == "__main__":
