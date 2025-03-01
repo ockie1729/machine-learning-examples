@@ -16,7 +16,7 @@ class TestTwoTowerModel(unittest.TestCase):
 
         model = TwoTowerModel(query_encoder=query_encoder, doc_encoder=doc_encoder)
 
-        h_queries, h_docs = model("query", "doc")
+        model("query", "doc")
 
 
 class TestEncoder(unittest.TestCase):
