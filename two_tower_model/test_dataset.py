@@ -13,7 +13,7 @@ class TestPairedTextDataset(unittest.TestCase):
             }
         )
 
-        dataset = PairedTextDataset(df=df)
+        PairedTextDataset(df=df)
 
     def test_len(self):
         df = pl.DataFrame(
