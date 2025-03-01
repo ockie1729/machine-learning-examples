@@ -8,7 +8,7 @@ class TestTwoTowerModel(unittest.TestCase):
         query_encoder = Encoder()
         doc_encoder = Encoder()
 
-        model = TwoTowerModel(query_encoder=query_encoder, doc_encoder=doc_encoder)
+        TwoTowerModel(query_encoder=query_encoder, doc_encoder=doc_encoder)
 
     def test_forward(self):
         query_encoder = Encoder()
@@ -16,7 +16,7 @@ class TestTwoTowerModel(unittest.TestCase):
 
         model = TwoTowerModel(query_encoder=query_encoder, doc_encoder=doc_encoder)
 
-        h_queries, h_docs = model("query", "doc")
+        model("query", "doc")
 
 
 class TestEncoder(unittest.TestCase):
@@ -39,6 +39,7 @@ class TestContrastiveLoss(unittest.TestCase):
         loss = contrastive_loss(y1, y2, t)
 
         self.assertEqual(loss, 1)
+
 
 if __name__ == "__main__":
     unittest.main()

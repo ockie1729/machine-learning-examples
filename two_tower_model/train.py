@@ -22,34 +22,41 @@ def predict(h_queries, h_docs, margin=1.0):
 
 
 def calc_accuracy(predictions: List[int], labels: List[int]) -> float:
-    accuracy = sum([pred == label for (pred, label) in zip(predictions, labels)])/len(predictions)
+    accuracy = sum([pred == label for (pred, label) in zip(predictions, labels)]) / len(
+        predictions
+    )
 
     return accuracy
 
 
 def train(train_dataset_path: str, valid_dataset_path) -> torch.nn.Module:
-
     # preparing datasets and dataloaders
     df_train = pl.read_csv(train_dataset_path)
     dataset_train = PairedTextDataset(df=df_train)
-    dataloader_train = DataLoader(dataset=dataset_train,
-                                 batch_size=2,
-                                 shuffle=False,
-                                 num_workers=2,
-                                 drop_last=True)
+    dataloader_train = DataLoader(
+        dataset=dataset_train,
+        batch_size=2,
+        shuffle=False,
+        num_workers=2,
+        drop_last=True,
+    )
 
     df_valid = pl.read_csv(valid_dataset_path)
     dataset_valid = PairedTextDataset(df=df_valid)
-    dataloader_valid = DataLoader(dataset=dataset_valid,
-                                  batch_size=2,
-                                  shuffle=False,
-                                  num_workers=2,
-                                  drop_last=True)
+    dataloader_valid = DataLoader(
+        dataset=dataset_valid,
+        batch_size=2,
+        shuffle=False,
+        num_workers=2,
+        drop_last=True,
+    )
 
     # preparing models, loss and optimizer
     query_encoder = Encoder()
     doc_encoder = Encoder()
-    two_tower_model = TwoTowerModel(query_encoder=query_encoder, doc_encoder=doc_encoder)
+    two_tower_model = TwoTowerModel(
+        query_encoder=query_encoder, doc_encoder=doc_encoder
+    )
 
     contrastive_loss = ContrastiveLoss()
 
@@ -58,11 +65,12 @@ def train(train_dataset_path: str, valid_dataset_path) -> torch.nn.Module:
     # training loop
     num_epochs = 10
     for epoch in range(num_epochs):
-        print(f"epoch {epoch+1}:")
+        print(f"epoch {epoch + 1}:")
 
         two_tower_model.train()
-        for queries, docs, labels in tqdm(dataloader_train,
-                                          total=len(dataloader_train)):
+        for queries, docs, labels in tqdm(
+            dataloader_train, total=len(dataloader_train)
+        ):
             h_queries, h_docs = two_tower_model(query=queries, doc=docs)
 
             loss = contrastive_loss(y1=h_queries, y2=h_docs, t=labels)
@@ -71,14 +79,15 @@ def train(train_dataset_path: str, valid_dataset_path) -> torch.nn.Module:
             loss.backward()
             optimizer.step()
 
-        print(f'Epoch {epoch+1}/{num_epochs}, Train Loss: {loss.item()}')
+        print(f"Epoch {epoch + 1}/{num_epochs}, Train Loss: {loss.item()}")
 
         # evaluation
         two_tower_model.eval()
         predictions_list = []
         labels_list = []
-        for queries, docs, labels in tqdm(dataloader_valid,
-                                          total=len(dataloader_valid)):
+        for queries, docs, labels in tqdm(
+            dataloader_valid, total=len(dataloader_valid)
+        ):
             h_queries, h_docs = two_tower_model(query=queries, doc=docs)
 
             loss_valid = contrastive_loss(y1=h_queries, y2=h_docs, t=labels)
@@ -90,9 +99,13 @@ def train(train_dataset_path: str, valid_dataset_path) -> torch.nn.Module:
         predictions_flatten = [pred for sublist in predictions_list for pred in sublist]
         labels_flatten = [label for sublist in labels_list for label in sublist]
 
-        acc_valid = calc_accuracy(predictions=predictions_flatten, labels=labels_flatten)
+        acc_valid = calc_accuracy(
+            predictions=predictions_flatten, labels=labels_flatten
+        )
 
-        print(f'Epoch {epoch+1}/{num_epochs}, Valid Loss: {loss_valid.item()} Valid Acc: {acc_valid}')
+        print(
+            f"Epoch {epoch + 1}/{num_epochs}, Valid Loss: {loss_valid.item()} Valid Acc: {acc_valid}"
+        )
         print()
 
     return two_tower_model
@@ -101,16 +114,13 @@ def train(train_dataset_path: str, valid_dataset_path) -> torch.nn.Module:
 def test_evaluation(model: torch.nn.Module, test_dataset_path: str) -> float:
     df_test = pl.read_csv(test_dataset_path)
     dataset_test = PairedTextDataset(df=df_test)
-    dataloader_test = DataLoader(dataset=dataset_test,
-                                 batch_size=2,
-                                 shuffle=False,
-                                 num_workers=2,
-                                 drop_last=True)
+    dataloader_test = DataLoader(
+        dataset=dataset_test, batch_size=2, shuffle=False, num_workers=2, drop_last=True
+    )
 
     predictions_list = []
     labels_list = []
-    for queries, docs, labels in tqdm(dataloader_test,
-                                      total=len(dataloader_test)):
+    for queries, docs, labels in tqdm(dataloader_test, total=len(dataloader_test)):
         h_queries, h_docs = model(query=queries, doc=docs)
 
         pred = predict(h_queries=h_queries, h_docs=h_docs)
@@ -129,11 +139,13 @@ def main():
     valid_dataset_path = "resource/sample_test_dataset.csv"
     test_dataset_path = "resource/sample_test_dataset.csv"
 
-    two_tower_model = train(train_dataset_path=train_dataset_path,
-                            valid_dataset_path=valid_dataset_path)
+    two_tower_model = train(
+        train_dataset_path=train_dataset_path, valid_dataset_path=valid_dataset_path
+    )
 
-    accuracy = test_evaluation(model=two_tower_model,
-                               test_dataset_path=test_dataset_path)
+    accuracy = test_evaluation(
+        model=two_tower_model, test_dataset_path=test_dataset_path
+    )
     print(f"test acc: {accuracy}")
 
 

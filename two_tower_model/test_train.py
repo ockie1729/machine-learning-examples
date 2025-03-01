@@ -8,9 +8,10 @@ from models import TwoTowerModel, Encoder
 class TestTrain(unittest.TestCase):
     @unittest.skip("実行に時間がかかるのでスキップ")
     def test_train(self):
-        train(train_dataset_path="resource/sample_dataset.csv",
-              valid_dataset_path="resource/sample_test_dataset.csv")
-
+        train(
+            train_dataset_path="resource/sample_dataset.csv",
+            valid_dataset_path="resource/sample_test_dataset.csv",
+        )
 
     def test_calc_accuracy(self):
         prediction = [1, 1, 1, 0, 0]
@@ -29,17 +30,17 @@ class TestTrain(unittest.TestCase):
 
         self.assertEqual(prediction.numpy().tolist(), [1, 1, 0, 0])
 
-
     def test_test_evaluation(self):
         test_dataset_path = "resource/sample_test_dataset.csv"
 
         query_encoder = Encoder()
         doc_encoder = Encoder()
-        two_tower_model = TwoTowerModel(query_encoder=query_encoder,
-                                        doc_encoder=doc_encoder)
+        two_tower_model = TwoTowerModel(
+            query_encoder=query_encoder, doc_encoder=doc_encoder
+        )
 
-        test_evaluation(model=two_tower_model,
-                        test_dataset_path=test_dataset_path)
+        test_evaluation(model=two_tower_model, test_dataset_path=test_dataset_path)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -19,9 +19,10 @@ class TwoTowerModel(nn.Module):
 
 class Encoder(nn.Module):
     def __init__(
-            self,
-            model_name: str = "line-corporation/line-distilbert-base-japanese",
-            max_length: int = 128):
+        self,
+        model_name: str = "line-corporation/line-distilbert-base-japanese",
+        max_length: int = 128,
+    ):
         super(Encoder, self).__init__()
 
         self.tokenizer = AutoTokenizer.from_pretrained(
@@ -35,7 +36,8 @@ class Encoder(nn.Module):
             input_str,
             return_tensors="pt",
             max_length=self.max_length,
-            padding="max_length")
+            padding="max_length",
+        )
         output = self.model(**tokenized)
 
         return torch.mean(output.last_hidden_state, dim=1, keepdim=False)

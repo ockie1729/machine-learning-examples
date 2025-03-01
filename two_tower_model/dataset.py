@@ -1,6 +1,7 @@
 from torch.utils.data import Dataset
 import polars as pl
 
+
 class PairedTextDataset(Dataset):
     def __init__(self, df: pl.DataFrame):
         self.text1_list = df["text1"].to_list()
