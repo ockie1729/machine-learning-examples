@@ -9,8 +9,8 @@ class TestTrain(unittest.TestCase):
     @unittest.skip("実行に時間がかかるのでスキップ")
     def test_train(self):
         train(
-            train_dataset_path="two_tower_model/resource/sample_dataset.csv",
-            valid_dataset_path="two_tower_model/resource/sample_test_dataset.csv",
+            train_dataset_path="resource/sample_dataset.csv",
+            valid_dataset_path="resource/sample_test_dataset.csv",
         )
 
     def test_calc_accuracy(self):
@@ -31,7 +31,7 @@ class TestTrain(unittest.TestCase):
         self.assertEqual(prediction.numpy().tolist(), [1, 1, 0, 0])
 
     def test_test_evaluation(self):
-        test_dataset_path = "two_tower_model/resource/sample_test_dataset.csv"
+        test_dataset_path = "resource/sample_test_dataset.csv"
 
         query_encoder = Encoder()
         doc_encoder = Encoder()
