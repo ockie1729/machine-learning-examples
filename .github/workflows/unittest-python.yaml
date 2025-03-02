@@ -1,0 +1,24 @@
+name: Unittest
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  unittest:
+    runs-on: ubuntu-latest
+    name: Run unittest
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v4
+
+      - name: Setup up Python environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install .
+
+      - name: unittest for python
+        run: cd two_tower_model && python -m unittest discover .
