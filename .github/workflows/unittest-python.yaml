@@ -10,7 +10,7 @@ jobs:
     name: Run unittest
     steps:
       - name: Check out source repository
-      - uses: actions/checkout@v4
+        uses: actions/checkout@v4
 
       - name: Setup up Python environment
         uses: actions/setup-python@v5
