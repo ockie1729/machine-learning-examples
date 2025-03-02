@@ -138,6 +138,7 @@ def main():
     train_dataset_path = "resource/sample_dataset.csv"
     valid_dataset_path = "resource/sample_test_dataset.csv"
     test_dataset_path = "resource/sample_test_dataset.csv"
+    weight_path = "output/model.pth"
 
     two_tower_model = train(
         train_dataset_path=train_dataset_path, valid_dataset_path=valid_dataset_path
@@ -147,6 +148,8 @@ def main():
         model=two_tower_model, test_dataset_path=test_dataset_path
     )
     print(f"test acc: {accuracy}")
+
+    torch.save(two_tower_model.state_dict(), weight_path)
 
 
 if __name__ == "__main__":
