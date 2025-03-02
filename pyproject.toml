@@ -1,0 +1,16 @@
+[project]
+name = "machine_learning_examples"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "fugashi==1.4.0",
+    "polars==1.23.0",
+    "sentencepiece==0.2.0",
+    "torch==2.6.0",
+    "transformers==4.49.0",
+    "unidic-lite==1.0.8",
+]
+
+[[tool.mypy.overrides]]
+module = ["transformers.*"]
+follow_untyped_imports = true
