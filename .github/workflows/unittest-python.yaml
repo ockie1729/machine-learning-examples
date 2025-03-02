@@ -21,4 +21,4 @@ jobs:
         run: pip install .
 
       - name: unittest for python
-        run: python -m unittest discover two_tower_model/
+        run: cd two_tower_model && python -m unittest discover .
