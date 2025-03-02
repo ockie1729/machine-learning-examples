@@ -2,6 +2,8 @@
 # coding: utf-8
 from typing import List
 
+import argparse
+
 import polars as pl
 from tqdm import tqdm
 
@@ -29,7 +31,9 @@ def calc_accuracy(predictions: List[int], labels: List[int]) -> float:
     return accuracy
 
 
-def train(train_dataset_path: str, valid_dataset_path) -> torch.nn.Module:
+def train(
+    train_dataset_path: str, valid_dataset_path: str, num_epochs: int = 10
+) -> torch.nn.Module:
     # preparing datasets and dataloaders
     df_train = pl.read_csv(train_dataset_path)
     dataset_train = PairedTextDataset(df=df_train)
@@ -63,7 +67,6 @@ def train(train_dataset_path: str, valid_dataset_path) -> torch.nn.Module:
     optimizer = AdamW(two_tower_model.parameters(), lr=0.01, weight_decay=0.01)
 
     # training loop
-    num_epochs = 10
     for epoch in range(num_epochs):
         print(f"epoch {epoch + 1}:")
 
@@ -135,21 +138,33 @@ def test_evaluation(model: torch.nn.Module, test_dataset_path: str) -> float:
 
 
 def main():
-    train_dataset_path = "resource/sample_dataset.csv"
-    valid_dataset_path = "resource/sample_test_dataset.csv"
-    test_dataset_path = "resource/sample_test_dataset.csv"
-    weight_path = "output/model.pth"
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--train_dataset_path", type=str, default="resource/sample_dataset.csv"
+    )
+    parser.add_argument(
+        "--valid_dataset_path", type=str, default="resource/sample_test_dataset.csv"
+    )
+    parser.add_argument(
+        "--test_dataset_path", type=str, default="resource/sample_test_dataset.csv"
+    )
+    parser.add_argument("--weight_path", type=str, default="output/model.pth")
+    parser.add_argument("--num_epochs", type=int, default=10)
+    args = parser.parse_args()
 
     two_tower_model = train(
-        train_dataset_path=train_dataset_path, valid_dataset_path=valid_dataset_path
+        train_dataset_path=args.train_dataset_path,
+        valid_dataset_path=args.valid_dataset_path,
+        num_epochs=args.num_epochs,
     )
 
     accuracy = test_evaluation(
-        model=two_tower_model, test_dataset_path=test_dataset_path
+        model=two_tower_model,
+        test_dataset_path=args.test_dataset_path,
     )
     print(f"test acc: {accuracy}")
 
-    torch.save(two_tower_model.state_dict(), weight_path)
+    torch.save(two_tower_model.state_dict(), args.weight_path)
 
 
 if __name__ == "__main__":
