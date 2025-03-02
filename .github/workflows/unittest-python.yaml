@@ -17,5 +17,8 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install dependencies
+        run: pip install .
+
       - name: unittest for python
         run: python -m unittest discover two_tower_model/
